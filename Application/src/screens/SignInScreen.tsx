@@ -96,7 +96,7 @@ export default function SignInScreen({ navigation }: any) {
 
           {/* Sign Up Link */}
           <Text style={styles.signupText}>
-            Don’t have an account?{' '}
+            Don't have an account?{' '}
             <Text
               style={styles.signupLink}
               onPress={() => navigation.navigate('SignUp')}
