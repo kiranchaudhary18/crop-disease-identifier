@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Crop Disease Identifier",
+    "slug": "crop-disease-identifier",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/h1.png",
+    "splash": {
+      "image": "./assets/h1.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1dd15d"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/h1.png",
+        "backgroundColor": "#1dd15d"
+      }
+    }
+  }
+}
