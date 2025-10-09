@@ -6,22 +6,15 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-<<<<<<< HEAD
+  Alert,
   TouchableOpacity,
   Alert,
   ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signIn } from '../services/authService';
-import { FontAwesome, AntDesign } from '@expo/vector-icons';
-=======
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
-import { signIn } from '../services/authService';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
->>>>>>> 4158175 (Added Application folder from main branch)
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -46,24 +39,11 @@ export default function SignInScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-<<<<<<< HEAD
-      style={{ flex: 1 }}
+      style={styles.container}
     >
-      <LinearGradient
-        colors={['#f5f7ff', '#eef2ff']}
-        style={styles.container}
-      >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-          <View style={styles.iconContainer}>
-            <View style={styles.iconInner}>
-              <Text style={{ fontSize: 28, color: 'white' }}>⚡</Text>
-            </View>
-          </View>
-
-          {/* Headings */}
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>स्वागत है</Text>
-          <Text style={styles.subtext}>Sign in to continue to your account</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>स्वागत है</Text>
+        <Text style={styles.subtitle}>Sign in to continue</Text>
 
           {/* Inputs */}
           <View style={styles.inputContainer}>
@@ -106,77 +86,16 @@ export default function SignInScreen({ navigation }: any) {
 
           {/* Sign Up Link */}
           <Text style={styles.signupText}>
-            Don't have an account?{' '}
+            Don’t have an account?{' '}
             <Text
               style={styles.signupLink}
               onPress={() => navigation.navigate('SignUp')}
             >
               Sign Up
             </Text>
-          </Text>
-
-          {/* Or Continue */}
-          <Text style={styles.orText}>Or continue with</Text>
-
-          {/* Social Buttons */}
-          <View style={styles.socialContainer}>
-            {/* Google */}
-            <TouchableOpacity style={styles.socialButton}>
-              <AntDesign name="google" size={28} color="#DB4437" />
-            </TouchableOpacity>
-
-            {/* Apple */}
-            <TouchableOpacity style={styles.socialButton}>
-              <FontAwesome name="apple" size={28} color="#000" />
-            </TouchableOpacity>
-
-            {/* Facebook */}
-            <TouchableOpacity style={styles.socialButton}>
-              <FontAwesome name="facebook" size={28} color="#3b5998" />
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </LinearGradient>
-=======
-      style={styles.container}
-    >
-      <View style={styles.content}>
-        <Text style={styles.title}>स्वागत है</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoComplete="password"
-          />
-
-          <PrimaryButton title="Sign In" onPress={handleSignIn} loading={loading} />
-
-          <TouchableOpacity
-            style={styles.linkContainer}
-            onPress={() => navigation.navigate('SignUp')}
-          >
-            <Text style={styles.linkText}>
-              Don't have an account? <Text style={styles.linkBold}>Sign Up</Text>
-            </Text>
           </TouchableOpacity>
         </View>
       </View>
->>>>>>> 4158175 (Added Application folder from main branch)
     </KeyboardAvoidingView>
   );
 }
@@ -184,17 +103,12 @@ export default function SignInScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-<<<<<<< HEAD
-    paddingHorizontal: 24,
+    backgroundColor: colors.background,
   },
-  iconContainer: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  iconInner: {
-    backgroundColor: '#7b5cff',
-    borderRadius: 16,
-    padding: 16,
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
   },
   title: {
     fontSize: 28,
@@ -256,6 +170,7 @@ const styles = StyleSheet.create({
   signupLink: {
     color: '#5f3efc',
     fontWeight: '600',
+>>>>>>> 4158175 (Added Application folder from main branch)
   },
   orText: {
     textAlign: 'center',
@@ -275,51 +190,5 @@ const styles = StyleSheet.create({
     padding: 14,
     backgroundColor: 'white',
     elevation: 2,
-=======
-    backgroundColor: colors.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
-  },
-  title: {
-    fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
-    color: colors.primary,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    fontSize: fontSizes.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.xl,
-  },
-  form: {
-    gap: spacing.md,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    fontSize: fontSizes.md,
-    color: colors.text,
-  },
-  linkContainer: {
-    marginTop: spacing.md,
-    alignItems: 'center',
-  },
-  linkText: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-  },
-  linkBold: {
-    color: colors.primary,
-    fontWeight: '600',
->>>>>>> 4158175 (Added Application folder from main branch)
   },
 });
