@@ -26,9 +26,13 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
+<<<<<<< HEAD
         "WRITE_EXTERNAL_STORAGE",
         "INTERNET",
         "ACCESS_NETWORK_STATE"
+=======
+        "WRITE_EXTERNAL_STORAGE"
+>>>>>>> 4158175 (Added Application folder from main branch)
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
+=======
+import React, { useState } from 'react';
+>>>>>>> 4158175 (Added Application folder from main branch)
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
+<<<<<<< HEAD
   TouchableOpacity,
   Alert,
   ScrollView,
@@ -35,10 +40,37 @@ export default function SignUpScreen({ navigation }: any) {
     }
     if (!agreed) {
       Alert.alert("Error", "You must agree to the Terms of Service and Privacy Policy");
+=======
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { signUp } from '../services/authService';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
+
+export default function SignUpScreen({ navigation }: any) {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignUp() {
+    if (!fullName || !email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+>>>>>>> 4158175 (Added Application folder from main branch)
       return;
     }
 
     setLoading(true);
+<<<<<<< HEAD
 
     // 1️⃣ Sign up
     const { error: signUpError } = await signUp(email, password, fullName);
@@ -62,10 +94,25 @@ export default function SignUpScreen({ navigation }: any) {
         index: 0,
         routes: [{ name: "Home" }], // Replace "Home" with your main app screen
       });
+=======
+    const { error } = await signUp(email, password, fullName);
+    setLoading(false);
+
+    if (error) {
+      Alert.alert('Sign Up Failed', error.message);
+    } else {
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('SignIn'),
+        },
+      ]);
+>>>>>>> 4158175 (Added Application folder from main branch)
     }
   }
 
   return (
+<<<<<<< HEAD
     <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -175,10 +222,64 @@ export default function SignUpScreen({ navigation }: any) {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
+=======
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.content}>
+          <Text style={styles.title}>नया खाता बनाएं</Text>
+          <Text style={styles.subtitle}>Create a new account</Text>
+
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoComplete="email"
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Password (min 6 characters)"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete="password"
+            />
+
+            <PrimaryButton title="Sign Up" onPress={handleSignUp} loading={loading} />
+
+            <TouchableOpacity
+              style={styles.linkContainer}
+              onPress={() => navigation.navigate('SignIn')}
+            >
+              <Text style={styles.linkText}>
+                Already have an account? <Text style={styles.linkBold}>Sign In</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+>>>>>>> 4158175 (Added Application folder from main branch)
   );
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   container: { flex: 1, backgroundColor: '#F9F8FF' },
   scrollContent: { flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40, paddingHorizontal: 20 },
   iconCircle: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', marginBottom: 20, elevation: 10, shadowColor: '#6B4EFF' },
@@ -198,4 +299,57 @@ const styles = StyleSheet.create({
   orText: { marginVertical: 25, fontSize: 14, color: '#888' },
   socialRow: { flexDirection: 'row', justifyContent: 'center', gap: 20 },
   socialButton: { backgroundColor: '#FFFFFF', width: 60, height: 50, borderRadius: 15, justifyContent: 'center', alignItems: 'center', elevation: 5, shadowColor: '#B0A8F2', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 5 },
+=======
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
+  },
+  title: {
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: fontSizes.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  form: {
+    gap: spacing.md,
+  },
+  input: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: fontSizes.md,
+    color: colors.text,
+  },
+  linkContainer: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: fontSizes.sm,
+    color: colors.textSecondary,
+  },
+  linkBold: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+>>>>>>> 4158175 (Added Application folder from main branch)
 });

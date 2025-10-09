@@ -6,6 +6,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+<<<<<<< HEAD
   TouchableOpacity,
   Alert,
   ScrollView,
@@ -13,6 +14,14 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { signIn } from '../services/authService';
 import { FontAwesome, AntDesign } from '@expo/vector-icons';
+=======
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
+import { signIn } from '../services/authService';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
+>>>>>>> 4158175 (Added Application folder from main branch)
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -37,6 +46,7 @@ export default function SignInScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+<<<<<<< HEAD
       style={{ flex: 1 }}
     >
       <LinearGradient
@@ -127,6 +137,46 @@ export default function SignInScreen({ navigation }: any) {
           </View>
         </ScrollView>
       </LinearGradient>
+=======
+      style={styles.container}
+    >
+      <View style={styles.content}>
+        <Text style={styles.title}>स्वागत है</Text>
+        <Text style={styles.subtitle}>Sign in to continue</Text>
+
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoComplete="password"
+          />
+
+          <PrimaryButton title="Sign In" onPress={handleSignIn} loading={loading} />
+
+          <TouchableOpacity
+            style={styles.linkContainer}
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            <Text style={styles.linkText}>
+              Don't have an account? <Text style={styles.linkBold}>Sign Up</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+>>>>>>> 4158175 (Added Application folder from main branch)
     </KeyboardAvoidingView>
   );
 }
@@ -134,6 +184,7 @@ export default function SignInScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
     paddingHorizontal: 24,
   },
   iconContainer: {
@@ -224,5 +275,51 @@ const styles = StyleSheet.create({
     padding: 14,
     backgroundColor: 'white',
     elevation: 2,
+=======
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  title: {
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  subtitle: {
+    fontSize: fontSizes.md,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: spacing.xl,
+  },
+  form: {
+    gap: spacing.md,
+  },
+  input: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    fontSize: fontSizes.md,
+    color: colors.text,
+  },
+  linkContainer: {
+    marginTop: spacing.md,
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: fontSizes.sm,
+    color: colors.textSecondary,
+  },
+  linkBold: {
+    color: colors.primary,
+    fontWeight: '600',
+>>>>>>> 4158175 (Added Application folder from main branch)
   },
 });
