@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signIn } from '../services/authService';
-import { FontAwesome, AntDesign } from '@expo/vector-icons';
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -40,20 +40,25 @@ export default function SignInScreen({ navigation }: any) {
       style={{ flex: 1 }}
     >
       <LinearGradient
-        colors={['#f5f7ff', '#eef2ff']}
+        colors={['#e6f4ea', '#f2fff4']} // 🌿 Keep your existing background
         style={styles.container}
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          
+          {/* Custom Logo with Rounded White Background */}
           <View style={styles.iconContainer}>
-            <View style={styles.iconInner}>
-              <Text style={{ fontSize: 28, color: 'white' }}>⚡</Text>
+            <View style={styles.logoBackground}>
+              <Image
+                source={require('../../assets/crop-logo.jpg')} // 👈 place your logo inside assets folder
+                style={styles.logo}
+              />
             </View>
           </View>
 
           {/* Headings */}
           <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>स्वागत है</Text>
-          <Text style={styles.subtext}>Sign in to continue to your account</Text>
+          <Text style={styles.subtitle}>आपका स्वागत है</Text>
+          <Text style={styles.subtext}>Login to manage your farming dashboard</Text>
 
           {/* Inputs */}
           <View style={styles.inputContainer}>
@@ -85,7 +90,7 @@ export default function SignInScreen({ navigation }: any) {
           {/* Login Button */}
           <TouchableOpacity onPress={handleSignIn} activeOpacity={0.8}>
             <LinearGradient
-              colors={['#7b5cff', '#5f3efc']}
+              colors={['#2e8b57', '#3cb371']}
               style={styles.button}
             >
               <Text style={styles.buttonText}>
@@ -104,27 +109,6 @@ export default function SignInScreen({ navigation }: any) {
               Sign Up
             </Text>
           </Text>
-
-          {/* Or Continue */}
-          <Text style={styles.orText}>Or continue with</Text>
-
-          {/* Social Buttons */}
-          <View style={styles.socialContainer}>
-            {/* Google */}
-            <TouchableOpacity style={styles.socialButton}>
-              <AntDesign name="google" size={28} color="#DB4437" />
-            </TouchableOpacity>
-
-            {/* Apple */}
-            <TouchableOpacity style={styles.socialButton}>
-              <FontAwesome name="apple" size={28} color="#000" />
-            </TouchableOpacity>
-
-            {/* Facebook */}
-            <TouchableOpacity style={styles.socialButton}>
-              <FontAwesome name="facebook" size={28} color="#3b5998" />
-            </TouchableOpacity>
-          </View>
         </ScrollView>
       </LinearGradient>
     </KeyboardAvoidingView>
@@ -138,29 +122,42 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  iconInner: {
-    backgroundColor: '#7b5cff',
-    borderRadius: 16,
-    padding: 16,
+  logoBackground: {
+    backgroundColor: 'white', // ✅ white background behind logo
+    borderRadius: 70, // ✅ rounded rectangle shape
+    padding: 8, // space inside
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4, // subtle shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 20, // ✅ slightly rounded logo
+    resizeMode: 'cover',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111',
+    color: '#0d3b1d',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111',
+    color: '#0d3b1d',
     textAlign: 'center',
     marginTop: 2,
   },
   subtext: {
     textAlign: 'center',
-    color: '#666',
+    color: '#4f6f52',
     marginBottom: 30,
   },
   inputContainer: {
@@ -168,12 +165,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#333',
+    color: '#2e3d2f',
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#bcd6b3',
     backgroundColor: 'white',
     borderRadius: 12,
     paddingHorizontal: 14,
@@ -182,7 +179,7 @@ const styles = StyleSheet.create({
   },
   forgot: {
     fontSize: 13,
-    color: '#5f3efc',
+    color: '#2e8b57',
     marginTop: 4,
   },
   button: {
@@ -199,30 +196,11 @@ const styles = StyleSheet.create({
   signupText: {
     textAlign: 'center',
     marginTop: 16,
-    color: '#666',
+    color: '#4f6f52',
     fontSize: 14,
   },
   signupLink: {
-    color: '#5f3efc',
+    color: '#2e8b57',
     fontWeight: '600',
-  },
-  orText: {
-    textAlign: 'center',
-    marginVertical: 16,
-    color: '#999',
-    fontSize: 13,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
-  },
-  socialButton: {
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
-    backgroundColor: 'white',
-    elevation: 2,
   },
 });
