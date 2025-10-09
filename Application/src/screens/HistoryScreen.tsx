@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { getUserScans } from '../services/scanService';
 import { ScanCard } from '../components/ScanCard';
 import { Loader } from '../components/Loader';
 import { colors, spacing, fontSizes } from '../styles/theme';
+import { Ionicons } from '@expo/vector-icons'; // Expo icons (या react-native-vector-icons)
 
 export default function HistoryScreen({ navigation }: any) {
   const { user } = useAuth();
@@ -79,6 +80,11 @@ export default function HistoryScreen({ navigation }: any) {
           }
         />
       )}
+
+      {/* Static Plus Button */}
+      <TouchableOpacity style={styles.fab} onPress={() => console.log('Plus pressed')}>
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -125,5 +131,21 @@ const styles = StyleSheet.create({
   emptySubtext: {
     fontSize: fontSizes.md,
     color: colors.textSecondary,
+  },
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 30,
+    backgroundColor: 'green',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
 });

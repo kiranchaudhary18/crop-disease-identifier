@@ -1,21 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { LogOut, Globe } from 'lucide-react-native';
-import { useAuth } from '../context/AuthContext';
-import { useApp } from '../context/AppContext';
-import { signOut } from '../services/authService';
-import { colors, spacing, fontSizes, borderRadius } from '../styles/theme';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert } from "react-native";
+import { LogOut, Globe, Info, Bell, SunMoon } from "lucide-react-native";
+import { useAuth } from "../context/AuthContext";
+import { useApp } from "../context/AppContext";
+import { signOut } from "../services/authService";
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }: any) {
   const { user } = useAuth();
-  const { language, setLanguage } = useApp();
+  const { language, setLanguage, theme, setTheme, colors } = useApp();
+
+  const [notificationsEnabled] = useState(true); // अभी static रहेगा
 
   async function handleSignOut() {
-    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: 'Sign Out',
-        style: 'destructive',
+        text: "Sign Out",
+        style: "destructive",
         onPress: async () => {
           await signOut();
         },
@@ -24,48 +25,84 @@ export default function SettingsScreen() {
   }
 
   function toggleLanguage() {
-    setLanguage(language === 'hi' ? 'en' : 'hi');
+    setLanguage(language === "hi" ? "en" : "hi");
+  }
+
+  function toggleTheme() {
+    setTheme(theme === "light" ? "dark" : "light");
+  }
+
+  function openAbout() {
+    navigation.navigate("About");
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>सेटिंग्स</Text>
-        <Text style={styles.subtitle}>Settings</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.header, { color: colors.text }]}>Settings</Text>
+
+      {/* User Email */}
+      {user?.email && (
+        <Text style={[styles.userEmail, { color: colors.textSecondary }]}>
+          {user.email}
+        </Text>
+      )}
+
+      {/* Language */}
+      <TouchableOpacity
+        style={[styles.menuItem, { backgroundColor: colors.surface }]}
+        onPress={toggleLanguage}
+      >
+        <View style={styles.menuItemLeft}>
+          <Globe size={22} color={colors.primary} />
+          <Text style={[styles.menuItemText, { color: colors.text }]}>Language</Text>
+        </View>
+        <Text style={[styles.menuItemValue, { color: colors.textSecondary }]}>
+          {language === "hi" ? "हिंदी" : "English"}
+        </Text>
+      </TouchableOpacity>
+
+      {/* Theme */}
+      <View style={[styles.menuItem, { backgroundColor: colors.surface }]}>
+        <View style={styles.menuItemLeft}>
+          <SunMoon size={22} color={colors.primary} />
+          <Text style={[styles.menuItemText, { color: colors.text }]}>Theme</Text>
+        </View>
+        <Switch value={theme === "dark"} onValueChange={toggleTheme} />
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          <Text style={styles.email}>{user?.email}</Text>
+      {/* Notifications */}
+      <View style={[styles.menuItem, { backgroundColor: colors.surface }]}>
+        <View style={styles.menuItemLeft}>
+          <Bell size={22} color={colors.primary} />
+          <Text style={[styles.menuItemText, { color: colors.text }]}>Notifications</Text>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-
-          <TouchableOpacity style={styles.menuItem} onPress={toggleLanguage}>
-            <View style={styles.menuItemLeft}>
-              <Globe size={24} color={colors.text} />
-              <Text style={styles.menuItemText}>Language</Text>
-            </View>
-            <Text style={styles.menuItemValue}>
-              {language === 'hi' ? 'हिंदी' : 'English'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-            <LogOut size={24} color={colors.error} />
-            <Text style={styles.signOutText}>Sign Out</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Crop Disease Identifier v1.0.0</Text>
-          <Text style={styles.footerText}>Made for farmers</Text>
-        </View>
+        <Text style={[styles.menuItemValue, { color: colors.textSecondary }]}>
+          {notificationsEnabled ? "Enabled" : "Disabled"}
+        </Text>
       </View>
+
+      {/* About */}
+      <TouchableOpacity
+        style={[styles.menuItem, { backgroundColor: colors.surface }]}
+        onPress={openAbout}
+      >
+        <View style={styles.menuItemLeft}>
+          <Info size={22} color={colors.primary} />
+          <Text style={[styles.menuItemText, { color: colors.text }]}>About</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Logout */}
+      <TouchableOpacity
+        style={[
+          styles.logoutButton,
+          { borderColor: colors.error, backgroundColor: colors.surface },
+        ]}
+        onPress={handleSignOut}
+      >
+        <LogOut size={22} color={colors.error} />
+        <Text style={[styles.logoutText, { color: colors.error }]}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -73,93 +110,50 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    padding: 16,
+    paddingTop: 50, // 👈 content thoda niche se start hoga
   },
   header: {
-    paddingTop: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    backgroundColor: colors.primary,
+    fontSize: 22,
+    fontWeight: "700",
+    textAlign: "center",
   },
-  title: {
-    fontSize: fontSizes.xl,
-    fontWeight: 'bold',
-    color: colors.surface,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: fontSizes.md,
-    color: colors.surface,
-    textAlign: 'center',
-    marginTop: spacing.xs,
-    opacity: 0.9,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: fontSizes.sm,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
-    textTransform: 'uppercase',
-  },
-  email: {
-    fontSize: fontSizes.md,
-    color: colors.text,
-    padding: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
+  userEmail: {
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 24,
   },
   menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   menuItemText: {
-    fontSize: fontSizes.md,
-    color: colors.text,
+    fontSize: 16,
   },
   menuItemValue: {
-    fontSize: fontSizes.md,
-    color: colors.textSecondary,
+    fontSize: 15,
   },
-  signOutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    padding: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    padding: 14,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.error,
+    marginTop: 32,
   },
-  signOutText: {
-    fontSize: fontSizes.md,
-    color: colors.error,
-    fontWeight: '600',
-  },
-  footer: {
-    marginTop: 'auto',
-    alignItems: 'center',
-    paddingVertical: spacing.lg,
-  },
-  footerText: {
-    fontSize: fontSizes.sm,
-    color: colors.textSecondary,
-    textAlign: 'center',
+  logoutText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
