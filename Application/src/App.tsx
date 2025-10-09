@@ -3,10 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { Hop as Home, History, Settings } from 'lucide-react-native';
+import { Home, History, Settings, Search as SearchIcon, ShoppingBag } from 'lucide-react-native';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider } from './context/AppContext';
 import { Loader } from './components/Loader';
+import FloatingAssistButton from './components/FloatingAssistButton';
 import { colors } from './styles/theme';
 
 import SignInScreen from './screens/SignInScreen';
@@ -17,6 +18,11 @@ import PreviewScreen from './screens/PreviewScreen';
 import ResultScreen from './screens/ResultScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import AboutScreen from './screens/AboutScreen';
+import SearchSolutionsScreen from './screens/SearchSolutionsScreen';
+import StoreScreen from './screens/StoreScreen';
+import ProductDetailScreen from './screens/ProductDetailScreen';
+import AssistChatScreen from './screens/AssistChatScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,6 +67,22 @@ function MainTabs() {
         }}
       />
       <Tab.Screen
+        name="Store"
+        component={StoreScreen}
+        options={{
+          tabBarLabel: 'Store',
+          tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchSolutionsScreen}
+        options={{
+          tabBarLabel: 'Search',
+          tabBarIcon: ({ color, size }) => <SearchIcon size={size} color={color} />,
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
@@ -79,20 +101,27 @@ function MainStack() {
       <Stack.Screen name="Camera" component={CameraScreen} />
       <Stack.Screen name="Preview" component={PreviewScreen} />
       <Stack.Screen name="Result" component={ResultScreen} />
+      <Stack.Screen name="About" component={AboutScreen} />
+      <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+      <Stack.Screen name="AssistChat" component={AssistChatScreen} />
     </Stack.Navigator>
   );
 }
 
 function Navigation() {
   const { user, loading } = useAuth();
+  const navRef = React.useRef<any>(null);
 
   if (loading) {
     return <Loader message="Loading..." />;
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navRef}>
       {user ? <MainStack /> : <AuthStack />}
+      {user ? (
+        <FloatingAssistButton onPress={() => (global as any).navRef?.navigate('AssistChat')} />
+      ) : null}
     </NavigationContainer>
   );
 }

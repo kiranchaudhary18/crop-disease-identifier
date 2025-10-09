@@ -5,6 +5,8 @@ import { getUserScans } from '../services/scanService';
 import { ScanCard } from '../components/ScanCard';
 import { Loader } from '../components/Loader';
 import { colors, spacing, fontSizes } from '../styles/theme';
+import { supabase } from '../lib/supabase';
+import { STORAGE_BUCKET } from '../utils/constants';
 
 export default function HistoryScreen({ navigation }: any) {
   const { user } = useAuth();
@@ -16,12 +18,41 @@ export default function HistoryScreen({ navigation }: any) {
     loadScans();
   }, []);
 
+  async function resolveImageUrl(imageUrl: string): Promise<string> {
+    if (/^https?:\/\//i.test(imageUrl)) {
+      return imageUrl;
+    }
+
+    try {
+      const { data, error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(imageUrl, 60 * 60);
+
+      if (!error && data?.signedUrl) {
+        return data.signedUrl;
+      }
+    } catch (e) {
+      console.error('Error resolving image URL:', e);
+    }
+
+    const { data: publicData } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(imageUrl);
+    return publicData.publicUrl;
+  }
+
   async function loadScans() {
     if (!user) return;
 
     try {
       const data = await getUserScans(user.id);
-      setScans(data);
+      const withResolvedUrls = await Promise.all(
+        (data || []).map(async (scan: any) => ({
+          ...scan,
+          image_url: await resolveImageUrl(scan.image_url),
+        }))
+      );
+      setScans(withResolvedUrls);
     } catch (error) {
       console.error('Error loading scans:', error);
     } finally {

@@ -1,6 +1,6 @@
 -- ============================================
 -- Crop Disease Identifier - Database Schema
--- Run this in Supabase SQL Editor
+-- v2 (Corrected & Improved)
 -- ============================================
 
 -- Enable UUID extension
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS profiles (
 -- Crops table
 CREATE TABLE IF NOT EXISTS crops (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name text NOT NULL,
+  name text NOT NULL UNIQUE, -- Added UNIQUE constraint for safety
   scientific_name text,
   created_at timestamptz DEFAULT now()
 );
@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS diseases (
 CREATE TABLE IF NOT EXISTS scans (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
-  crop_id uuid REFERENCES crops(id),
+  -- IMPROVEMENT: Added ON DELETE SET NULL. If a crop is deleted, old scans are kept but unlinked.
+  crop_id uuid REFERENCES crops(id) ON DELETE SET NULL,
   image_url text,
   prediction jsonb,
   confidence numeric,
@@ -50,25 +51,55 @@ CREATE TABLE IF NOT EXISTS scans (
   created_at timestamptz DEFAULT now()
 );
 
+-- Disease Solutions (Search Feature)
+CREATE TABLE IF NOT EXISTS public.disease_solutions (
+  id bigint generated always as identity primary key,
+  name text not null UNIQUE, -- Added UNIQUE constraint for safety
+  common_names text[] null,
+  description text null,
+  solutions text[] null,
+  created_at timestamptz default now()
+);
+
+-- Products for organic/inorganic medicines
+CREATE TABLE IF NOT EXISTS public.products (
+  id bigint generated always as identity primary key,
+  name text not null UNIQUE, -- Added UNIQUE constraint for safety
+  -- IMPROVEMENT: Added a CHECK constraint for data integrity.
+  category text not null CHECK (category IN ('organic', 'inorganic')),
+  target_diseases text[] null,
+  description text null,
+  price numeric(10,2) null,
+  image_url text null,
+  created_at timestamptz default now()
+);
+
+
 -- ============================================
 -- INDEXES
 -- ============================================
 
 CREATE INDEX IF NOT EXISTS idx_scans_user_id ON scans (user_id);
 CREATE INDEX IF NOT EXISTS idx_scans_created_at ON scans (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_disease_solutions_name ON public.disease_solutions USING gin (to_tsvector('simple', name));
+CREATE INDEX IF NOT EXISTS idx_disease_solutions_desc ON public.disease_solutions USING gin (to_tsvector('simple', description));
+CREATE INDEX IF NOT EXISTS idx_products_name ON public.products USING gin (to_tsvector('simple', name));
+CREATE INDEX IF NOT EXISTS idx_products_desc ON public.products USING gin (to_tsvector('simple', description));
 
 -- ============================================
 -- ROW LEVEL SECURITY
 -- ============================================
 
--- Enable RLS
+-- Enable RLS on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE crops ENABLE ROW LEVEL SECURITY;
 ALTER TABLE diseases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE scans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.disease_solutions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 -- --------------------------------------------
--- PROFILES POLICIES (FIXED: Added DROP POLICY)
+-- PROFILES POLICIES (idempotent)
 -- --------------------------------------------
 
 -- Drop policies if they already exist to avoid '42710' error
@@ -128,6 +159,13 @@ CREATE POLICY "Users can update own scans"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+-- Read-only policies for solutions/products
+DROP POLICY IF EXISTS "Authenticated users can read solutions." ON public.disease_solutions;
+CREATE POLICY "Authenticated users can read solutions." ON public.disease_solutions FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Authenticated users can read products." ON public.products;
+CREATE POLICY "Authenticated users can read products." ON public.products FOR SELECT TO authenticated USING (true);
+
 -- ============================================
 -- SAMPLE DATA
 -- ============================================
@@ -136,76 +174,22 @@ CREATE POLICY "Users can update own scans"
 INSERT INTO crops (name, scientific_name) VALUES
   ('Tomato', 'Solanum lycopersicum'),
   ('Okra', 'Abelmoschus esculentus')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 
 -- Insert sample diseases for Tomato
 INSERT INTO diseases (crop_id, name, description, remedies)
-SELECT
-  c.id,
-  'Healthy',
-  'Plant appears healthy with no visible disease symptoms.',
-  '["Continue regular watering and fertilization", "Monitor for any changes", "Maintain good air circulation"]'::jsonb
-FROM crops c WHERE c.name = 'Tomato'
+SELECT id, 'Healthy', 'Plant appears healthy with no visible disease symptoms.', '["Continue regular watering and fertilization", "Monitor for any changes", "Maintain good air circulation"]'::jsonb FROM crops WHERE name = 'Tomato'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO diseases (crop_id, name, description, remedies)
-SELECT
-  c.id,
-  'Early Blight',
-  'Fungal disease causing dark spots with concentric rings on older leaves.',
-  '["Remove and destroy infected leaves", "Apply fungicide containing chlorothalonil", "Improve air circulation", "Avoid overhead watering", "Rotate crops yearly"]'::jsonb
-FROM crops c WHERE c.name = 'Tomato'
+SELECT id, 'Early Blight', 'Fungal disease causing dark spots with concentric rings on older leaves.', '["Remove and destroy infected leaves", "Apply fungicide containing chlorothalonil", "Improve air circulation", "Avoid overhead watering", "Rotate crops yearly"]'::jsonb FROM crops WHERE name = 'Tomato'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO diseases (crop_id, name, description, remedies)
-SELECT
-  c.id,
-  'Late Blight',
-  'Serious disease causing water-soaked spots that turn brown and spread rapidly.',
-  '["Remove infected plants immediately", "Apply copper-based fungicide", "Ensure good drainage", "Space plants properly", "Avoid working with wet plants"]'::jsonb
-FROM crops c WHERE c.name = 'Tomato'
+SELECT id, 'Late Blight', 'Serious disease causing water-soaked spots that turn brown and spread rapidly.', '["Remove infected plants immediately", "Apply copper-based fungicide", "Ensure good drainage", "Space plants properly", "Avoid working with wet plants"]'::jsonb FROM crops WHERE name = 'Tomato'
 ON CONFLICT DO NOTHING;
 
--- ============================================
--- STORAGE BUCKET SETUP (Manual)
--- ============================================
-
--- Note: Storage bucket setup is manual.
--- Go to Supabase Dashboard > Storage
--- 1. Create a new bucket named: scans
--- 2. Set visibility to: Private
-
--- ============================================
--- Disease Solutions (Search Feature)
--- ============================================
-
-CREATE TABLE IF NOT EXISTS public.disease_solutions (
-  id bigint generated always as identity primary key,
-  name text not null,
-  common_names text[] null,
-  description text null,
-  solutions text[] null,
-  created_at timestamptz default now()
-);
-
--- Indexes for faster ilike/text search
-CREATE INDEX IF NOT EXISTS idx_disease_solutions_name ON public.disease_solutions USING gin (to_tsvector('simple', name));
-CREATE INDEX IF NOT EXISTS idx_disease_solutions_desc ON public.disease_solutions USING gin (to_tsvector('simple', description));
-
--- RLS: allow read for authenticated users
-ALTER TABLE public.disease_solutions ENABLE ROW LEVEL SECURITY;
-
--- Policy creation using conditional block (already good, no change needed here)
-DO $$ BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'disease_solutions' AND policyname = 'Allow read to authenticated'
-  ) THEN
-    CREATE POLICY "Allow read to authenticated" ON public.disease_solutions
-      FOR SELECT TO authenticated USING (true);
-  END IF;
-END $$;
-
--- Seed 10 dummy rows (Added ON CONFLICT DO NOTHING for safety)
+-- Seed disease solutions
 INSERT INTO public.disease_solutions (name, common_names, description, solutions) VALUES
 ('Early Blight', ARRAY['Alternaria blight'], 'Dark concentric spots on older leaves of tomato/potato.', ARRAY['Remove infected leaves','Use chlorothalonil fungicide','Avoid overhead watering']),
 ('Late Blight', ARRAY['Phytophthora blight'], 'Water-soaked lesions that spread rapidly in cool wet weather.', ARRAY['Destroy infected plants','Apply copper-based fungicide','Ensure drainage']),
@@ -217,4 +201,20 @@ INSERT INTO public.disease_solutions (name, common_names, description, solutions
 ('Fusarium Wilt', ARRAY['Fusarium yellows'], 'Yellowing and wilting, often one side of plant.', ARRAY['Plant resistant cultivars','Solarize soil','Rotate out of host crops']),
 ('Verticillium Wilt', ARRAY['Vert wilt'], 'V-shaped chlorosis on older leaves, wilting.', ARRAY['Improve soil health','Use resistant varieties','Remove infected debris']),
 ('Healthy', ARRAY['No disease'], 'No visible symptoms; plant is healthy.', ARRAY['Maintain good practices','Balanced fertilizer','Monitor regularly'])
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
+
+-- Seed sample medicines
+INSERT INTO public.products (name, category, target_diseases, description, price, image_url) VALUES
+('Neem Oil', 'organic', ARRAY['Early Blight','Leaf Spot','Powdery Mildew'], 'Broad-spectrum organic pesticide/fungicide derived from neem seeds.', 299.00, NULL),
+('Bacillus subtilis Spray', 'organic', ARRAY['Leaf Spot','Downy Mildew'], 'Beneficial bacteria-based bio-fungicide that suppresses foliar diseases.', 349.00, NULL),
+('Copper Oxychloride', 'inorganic', ARRAY['Bacterial Spot','Late Blight','Leaf Spot'], 'Inorganic copper fungicide effective against many bacterial/fungal diseases.', 399.00, NULL),
+('Sulfur Dust', 'inorganic', ARRAY['Powdery Mildew'], 'Traditional sulfur-based fungicide for powdery mildew.', 199.00, NULL),
+('Trichoderma Viride', 'organic', ARRAY['Fusarium Wilt','Verticillium Wilt'], 'Beneficial fungus for soil-borne disease suppression.', 379.00, NULL),
+('Phosphonate Systemic', 'inorganic', ARRAY['Downy Mildew','Late Blight'], 'Systemic phosphonate fungicide; improves plant defenses.', 429.00, NULL),
+('Potassium Bicarbonate', 'inorganic', ARRAY['Powdery Mildew'], 'Contact fungicide that disrupts fungal cell walls; safe profile.', 259.00, NULL),
+('Seaweed Extract', 'organic', ARRAY['General'], 'Organic biostimulant improving vigor and stress tolerance.', 219.00, NULL),
+('Chlorothalonil', 'inorganic', ARRAY['Early Blight','Leaf Spot'], 'Broad-spectrum contact fungicide for foliar diseases.', 449.00, NULL),
+('Garlic Extract Spray', 'organic', ARRAY['General','Leaf Spot'], 'Natural antimicrobial/repellent properties for mild disease pressure.', 189.00, NULL),
+('Copper Hydroxide', 'inorganic', ARRAY['Bacterial Spot','Leaf Spot'], 'Copper hydroxide formulation for bacterial/fungal leaf diseases.', 409.00, NULL),
+('Compost Tea', 'organic', ARRAY['General','Leaf Spot'], 'Microbial-rich tea to enhance leaf/soil microbiome.', 149.00, NULL)
+ON CONFLICT (name) DO NOTHING;
