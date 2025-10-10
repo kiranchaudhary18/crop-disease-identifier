@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { listProducts, Product } from '../services/storeService';
 import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
@@ -10,15 +10,7 @@ export default function StoreScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    await doSearch();
-  }
-
-  async function doSearch() {
+  const doSearch = useCallback(async () => {
     setError(null);
     setLoading(true);
     try {
@@ -29,7 +21,11 @@ export default function StoreScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [query, category]);
+
+  useEffect(() => {
+    doSearch();
+  }, [doSearch]);
 
   return (
     <View style={styles.container}>
