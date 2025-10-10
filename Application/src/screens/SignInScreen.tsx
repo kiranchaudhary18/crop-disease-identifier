@@ -6,14 +6,13 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   TouchableOpacity,
+  Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { signIn } from '../services/authService';
-import { PrimaryButton } from '../components/PrimaryButton';
-import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -38,62 +37,80 @@ export default function SignInScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
-      <View style={styles.content}>
-        <Text style={styles.title}>स्वागत है</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
+      <LinearGradient
+        colors={['#e6f4ea', '#f2fff4']} // 🌿 Keep your existing background
+        style={styles.container}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          
+          {/* Custom Logo with Rounded White Background */}
+          <View style={styles.iconContainer}>
+            <View style={styles.logoBackground}>
+              <Image
+                source={require('../../assets/crop-logo.jpg')} // 👈 place your logo inside assets folder
+                style={styles.logo}
+              />
+            </View>
+          </View>
 
-        {/* Inputs */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
+          {/* Headings */}
+          <Text style={styles.title}>Welcome Back</Text>
+          <Text style={styles.subtitle}>आपका स्वागत है</Text>
+          <Text style={styles.subtext}>Login to manage your farming dashboard</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
-            <Text style={styles.forgot}>Forgot Password?</Text>
+          {/* Inputs */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
+              <Text style={styles.forgot}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity onPress={handleSignIn} activeOpacity={0.8}>
+            <LinearGradient
+              colors={['#2e8b57', '#3cb371']}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? 'Loading...' : 'Login'}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
-        </View>
 
-        {/* Login Button */}
-        <TouchableOpacity onPress={handleSignIn} activeOpacity={0.8}>
-          <LinearGradient
-            colors={['#7b5cff', '#5f3efc']}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? 'Loading...' : 'Login'}
+          {/* Sign Up Link */}
+          <Text style={styles.signupText}>
+            Don’t have an account?{' '}
+            <Text
+              style={styles.signupLink}
+              onPress={() => navigation.navigate('SignUp')}
+            >
+              Sign Up
             </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* Sign Up Link */}
-        <Text style={styles.signupText}>
-          Don’t have an account?{' '}
-          <Text
-            style={styles.signupLink}
-            onPress={() => navigation.navigate('SignUp')}
-          >
-            Sign Up
           </Text>
-        </Text>
-      </View>
+        </ScrollView>
+      </LinearGradient>
     </KeyboardAvoidingView>
   );
 }
@@ -101,29 +118,46 @@ export default function SignInScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    paddingHorizontal: 24,
   },
-  content: {
-    flex: 1,
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logoBackground: {
+    backgroundColor: 'white', // ✅ white background behind logo
+    borderRadius: 70, // ✅ rounded rectangle shape
+    padding: 8, // space inside
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
+    elevation: 4, // subtle shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    borderRadius: 20, // ✅ slightly rounded logo
+    resizeMode: 'cover',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111',
+    color: '#0d3b1d',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#111',
+    color: '#0d3b1d',
     textAlign: 'center',
     marginTop: 2,
   },
   subtext: {
     textAlign: 'center',
-    color: '#666',
+    color: '#4f6f52',
     marginBottom: 30,
   },
   inputContainer: {
@@ -131,12 +165,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#333',
+    color: '#2e3d2f',
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#bcd6b3',
     backgroundColor: 'white',
     borderRadius: 12,
     paddingHorizontal: 14,
@@ -145,7 +179,7 @@ const styles = StyleSheet.create({
   },
   forgot: {
     fontSize: 13,
-    color: '#5f3efc',
+    color: '#2e8b57',
     marginTop: 4,
   },
   button: {
@@ -162,30 +196,11 @@ const styles = StyleSheet.create({
   signupText: {
     textAlign: 'center',
     marginTop: 16,
-    color: '#666',
+    color: '#4f6f52',
     fontSize: 14,
   },
   signupLink: {
-    color: '#5f3efc',
+    color: '#2e8b57',
     fontWeight: '600',
-  },
-  orText: {
-    textAlign: 'center',
-    marginVertical: 16,
-    color: '#999',
-    fontSize: 13,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
-  },
-  socialButton: {
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 12,
-    padding: 14,
-    backgroundColor: 'white',
-    elevation: 2,
   },
 });
