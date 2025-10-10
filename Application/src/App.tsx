@@ -18,8 +18,8 @@ import PreviewScreen from './screens/PreviewScreen';
 import ResultScreen from './screens/ResultScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import AboutScreen from './screens/AboutScreen';
 import SearchSolutionsScreen from './screens/SearchSolutionsScreen';
+import AboutScreen from './screens/AboutScreen';
 import StoreScreen from './screens/StoreScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import AssistChatScreen from './screens/AssistChatScreen';
@@ -120,7 +120,7 @@ function Navigation() {
     <NavigationContainer ref={navRef}>
       {user ? <MainStack /> : <AuthStack />}
       {user ? (
-        <FloatingAssistButton onPress={() => (global as any).navRef?.navigate('AssistChat')} />
+        <FloatingAssistButton onPress={() => navRef.current?.navigate('AssistChat')} />
       ) : null}
     </NavigationContainer>
   );
