@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { getProduct, Product } from '../services/storeService';
-import { colors, spacing, borderRadius, fontSizes } from '../styles/theme';
+import { colors, spacing, fontSizes } from '../styles/theme';
 
 export default function ProductDetailScreen({ route }: any) {
   const { id } = route.params as { id: number };
   const [product, setProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    load();
-  }, [id]);
-
-  async function load() {
+  const load = useCallback(async () => {
     setError(null);
     try {
       const p = await getProduct(id);
@@ -20,7 +16,11 @@ export default function ProductDetailScreen({ route }: any) {
     } catch (e: any) {
       setError(e?.message || 'Failed to load product');
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   if (error) {
     return (
