@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { getUserScans } from '../services/scanService';
@@ -13,10 +13,6 @@ export default function HistoryScreen({ navigation }: any) {
   const [scans, setScans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    loadScans();
-  }, []);
 
   async function resolveImageUrl(imageUrl: string): Promise<string> {
     if (/^https?:\/\//i.test(imageUrl)) {
@@ -41,7 +37,7 @@ export default function HistoryScreen({ navigation }: any) {
     return publicData.publicUrl;
   }
 
-  async function loadScans() {
+  const loadScans = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -58,7 +54,11 @@ export default function HistoryScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    loadScans();
+  }, [loadScans]);
 
   async function handleRefresh() {
     setRefreshing(true);
