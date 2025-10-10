@@ -20,7 +20,7 @@ export default function AssistChatScreen() {
     try {
       const reply = await sendAdvisorMessage([...messages, userMsg]);
       setMessages(prev => [...prev, reply]);
-    } catch (e: any) {
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, advisory service is temporarily unavailable.' }]);
     } finally {
       setSending(false);
