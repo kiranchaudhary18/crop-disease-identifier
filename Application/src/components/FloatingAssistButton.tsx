@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { colors, borderRadius, spacing } from '../styles/theme';
+import { colors, spacing } from '../styles/theme';
 
 export default function FloatingAssistButton({ onPress }: { onPress: () => void }) {
   return (
