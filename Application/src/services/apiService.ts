@@ -1,4 +1,4 @@
-import { PREDICTION_API_URL, MOCK_PREDICTIONS } from '../utils/constants';
+import { MOCK_PREDICTIONS } from '../utils/constants';
 
 export interface Prediction {
   disease_id: string | null;
@@ -12,7 +12,7 @@ export interface PredictionResponse {
 
 export async function getPredictionFromApi(imageUrl: string): Promise<PredictionResponse> {
   try {
-    const response = await fetch(PREDICTION_API_URL, {
+    const response = await fetch(process.env.EXPO_PUBLIC_PREDICTION_API_URL as string, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

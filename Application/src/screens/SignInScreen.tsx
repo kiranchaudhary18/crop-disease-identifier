@@ -49,7 +49,7 @@ export default function SignInScreen({ navigation }: any) {
           <View style={styles.iconContainer}>
             <View style={styles.logoBackground}>
               <Image
-                source={require('../../assets/crop-logo.jpg')} // 👈 place your logo inside assets folder
+                source={require('../../assets/crop-logo.png')} // 👈 place your logo inside assets folder
                 style={styles.logo}
               />
             </View>

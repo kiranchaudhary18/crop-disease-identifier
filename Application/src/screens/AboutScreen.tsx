@@ -1,10 +1,23 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from "react-native";
 import { useApp } from "../context/AppContext";
-import { Mail, FileText, Shield, Cpu, Zap, Stethoscope, WifiOff } from "lucide-react-native";
+import { FileText, Shield, Cpu, Zap, Stethoscope, WifiOff } from "lucide-react-native";
 
 export default function AboutScreen() {
-  const { colors } = useApp();
+  const app = useApp();
+  const colors = app?.colors ? {
+    background: "#fff",
+    text: "#000",
+    textSecondary: "#444",
+    primary: "#1e90ff",
+    surface: "#f4f4f4",
+  } : {
+    background: "#fff",
+    text: "#000",
+    textSecondary: "#444",
+    primary: "#1e90ff",
+    surface: "#f4f4f4",
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

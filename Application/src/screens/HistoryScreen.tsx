@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // ✅ Ionicons import
 import { useAuth } from '../context/AuthContext';
 import { getUserScans } from '../services/scanService';
 import { ScanCard } from '../components/ScanCard';
 import { Loader } from '../components/Loader';
 import { colors, spacing, fontSizes } from '../styles/theme';
-import { Ionicons } from '@expo/vector-icons'; // Expo icons (या react-native-vector-icons)
+import { supabase } from '../lib/supabase';
+import { STORAGE_BUCKET } from '../utils/constants';
 
 export default function HistoryScreen({ navigation }: any) {
   const { user } = useAuth();
@@ -13,37 +22,63 @@ export default function HistoryScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadScans();
-  }, []);
+  // Resolve image URLs from Supabase
+  async function resolveImageUrl(imageUrl: string): Promise<string> {
+    if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
 
-  async function loadScans() {
+    try {
+      const { data, error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .createSignedUrl(imageUrl, 60 * 60);
+
+      if (!error && data?.signedUrl) return data.signedUrl;
+    } catch (e) {
+      console.error('Error resolving image URL:', e);
+    }
+
+    const { data: publicData } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(imageUrl);
+    return publicData.publicUrl;
+  }
+
+  const loadScans = useCallback(async () => {
     if (!user) return;
 
     try {
       const data = await getUserScans(user.id);
-      setScans(data);
+      const withResolvedUrls = await Promise.all(
+        (data || []).map(async (scan: any) => ({
+          ...scan,
+          image_url: await resolveImageUrl(scan.image_url),
+        }))
+      );
+      setScans(withResolvedUrls);
     } catch (error) {
       console.error('Error loading scans:', error);
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
 
-  async function handleRefresh() {
+  useEffect(() => {
+    loadScans();
+  }, [loadScans]);
+
+  const handleRefresh = async () => {
     setRefreshing(true);
     await loadScans();
     setRefreshing(false);
-  }
+  };
 
-  function handleScanPress(scan: any) {
+  const handleScanPress = (scan: any) => {
     navigation.navigate('Result', {
       scanId: scan.id,
       predictions: scan.prediction?.predictions || scan.prediction,
       imageUrl: scan.image_url,
       isLowConf: scan.is_low_conf,
     });
-  }
+  };
 
   if (loading) {
     return <Loader message="Loading history..." />;

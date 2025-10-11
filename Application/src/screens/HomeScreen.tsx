@@ -1,117 +1,4 @@
-// import React from 'react';
-// import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-// import { Camera } from 'lucide-react-native';
-// import { colors, spacing, fontSizes, borderRadius } from '../styles/theme';
-
-// export default function HomeScreen({ navigation }: any) {
-//   function handleScanPress() {
-//     navigation.navigate('Camera');
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.header}>
-//         <Text style={styles.title}>फसल रोग पहचानकर्ता</Text>
-//         <Text style={styles.subtitle}>Crop Disease Identifier</Text>
-//       </View>
-
-//       <View style={styles.content}>
-//         <TouchableOpacity style={styles.scanButton} onPress={handleScanPress} activeOpacity={0.8}>
-//           <Camera size={48} color={colors.surface} />
-//           <Text style={styles.scanText}>स्कैन करें</Text>
-//           <Text style={styles.scanSubtext}>Scan Plant</Text>
-//         </TouchableOpacity>
-
-//         <View style={styles.tipsContainer}>
-//           <Text style={styles.tipsTitle}>Tips for best results:</Text>
-//           <Text style={styles.tipText}>• Take photo in good lighting</Text>
-//           <Text style={styles.tipText}>• Focus on affected leaf area</Text>
-//           <Text style={styles.tipText}>• Keep leaf centered in frame</Text>
-//           <Text style={styles.tipText}>• Avoid blurry images</Text>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: colors.background,
-//   },
-//   header: {
-//     paddingTop: spacing.xxl,
-//     paddingHorizontal: spacing.lg,
-//     paddingBottom: spacing.lg,
-//     backgroundColor: colors.primary,
-//   },
-//   title: {
-//     fontSize: fontSizes.xl,
-//     fontWeight: 'bold',
-//     color: colors.surface,
-//     textAlign: 'center',
-//   },
-//   subtitle: {
-//     fontSize: fontSizes.md,
-//     color: colors.surface,
-//     textAlign: 'center',
-//     marginTop: spacing.xs,
-//     opacity: 0.9,
-//   },
-//   content: {
-//     flex: 1,
-//     paddingHorizontal: spacing.lg,
-//     paddingTop: spacing.xl,
-//     alignItems: 'center',
-//   },
-//   scanButton: {
-//     backgroundColor: colors.primary,
-//     width: 200,
-//     height: 200,
-//     borderRadius: borderRadius.full,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 8,
-//     elevation: 8,
-//   },
-//   scanText: {
-//     fontSize: fontSizes.xl,
-//     fontWeight: 'bold',
-//     color: colors.surface,
-//     marginTop: spacing.md,
-//   },
-//   scanSubtext: {
-//     fontSize: fontSizes.sm,
-//     color: colors.surface,
-//     opacity: 0.9,
-//   },
-//   tipsContainer: {
-//     marginTop: spacing.xxl,
-//     padding: spacing.lg,
-//     backgroundColor: colors.surface,
-//     borderRadius: borderRadius.md,
-//     width: '100%',
-//   },
-//   tipsTitle: {
-//     fontSize: fontSizes.md,
-//     fontWeight: '600',
-//     color: colors.text,
-//     marginBottom: spacing.sm,
-//   },
-//   tipText: {
-//     fontSize: fontSizes.sm,
-//     color: colors.textSecondary,
-//     marginVertical: spacing.xs,
-//   },
-// });
-
-
-
-
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -119,12 +6,27 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Modal,
 } from "react-native";
-import { Camera, Settings, History, BookOpen } from "lucide-react-native";
+import { Camera, History, BookOpen, X } from "lucide-react-native";
 
 export default function HomeScreen({ navigation }: any) {
+  const [showTipsModal, setShowTipsModal] = useState(false);
+
   function handleScanPress() {
     navigation.navigate("Camera");
+  }
+
+  function handleTipsPress() {
+    setShowTipsModal(true);
+  }
+
+  function closeTipsModal() {
+    setShowTipsModal(false);
+  }
+
+  function handleHistoryPress() {
+    navigation.navigate("History");
   }
 
   return (
@@ -136,9 +38,6 @@ export default function HomeScreen({ navigation }: any) {
         {/* Top Header */}
         <View style={styles.topBar}>
           <Text style={styles.logo}>🌱 CropGuard</Text>
-          <TouchableOpacity>
-            <Settings size={24} color="#111827" />
-          </TouchableOpacity>
         </View>
 
         {/* Hero Section */}
@@ -146,7 +45,7 @@ export default function HomeScreen({ navigation }: any) {
           {/* Farmer with crops image above text */}
           <Image
             source={{
-              uri: "https://example.com/path-to-farmer-with-crops.jpg", // ✅ Working image link
+              uri: "https://images.unsplash.com/photo-1606607291766-9b74d8b62b43?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
             }}
             style={styles.heroImageLarge}
           />
@@ -168,11 +67,11 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* History & Tips */}
         <View style={styles.row}>
-          <TouchableOpacity style={styles.smallCard}>
+          <TouchableOpacity style={styles.smallCard} onPress={handleHistoryPress}>
             <History size={22} color="#22c55e" />
             <Text style={styles.smallCardText}>History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.smallCard}>
+          <TouchableOpacity style={styles.smallCard} onPress={handleTipsPress}>
             <BookOpen size={22} color="#22c55e" />
             <Text style={styles.smallCardText}>Tips</Text>
           </TouchableOpacity>
@@ -193,7 +92,8 @@ export default function HomeScreen({ navigation }: any) {
         <View style={styles.tipCard}>
           <Text style={styles.tipCardTitle}>💧 Watering Schedule</Text>
           <Text style={styles.tipCardText}>
-            Water your crops early in the morning to reduce evaporation and prevent fungal growth.
+            Water your crops early in the morning to reduce evaporation and
+            prevent fungal growth.
           </Text>
         </View>
 
@@ -201,10 +101,82 @@ export default function HomeScreen({ navigation }: any) {
         <View style={styles.tipCard}>
           <Text style={styles.tipCardTitle}>🌞 Proper Sunlight</Text>
           <Text style={styles.tipCardText}>
-            Ensure your crops get enough sunlight but avoid overexposure to prevent leaf burns.
+            Ensure your crops get enough sunlight but avoid overexposure to
+            prevent leaf burns.
           </Text>
         </View>
       </ScrollView>
+
+      {/* Tips Modal */}
+      <Modal
+        visible={showTipsModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeTipsModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>🌱 Crop Care Tips</Text>
+              <TouchableOpacity onPress={closeTipsModal} style={styles.closeButton}>
+                <X size={24} color="#6b7280" />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              <View style={styles.modalTipCard}>
+                <Text style={styles.modalTipTitle}>📷 Photo Quality</Text>
+                <Text style={styles.modalTipText}>
+                  • Take photos in good lighting conditions{'\n'}
+                  • Focus on the affected area clearly{'\n'}
+                  • Avoid shadows and blurry images{'\n'}
+                  • Include the entire leaf if possible
+                </Text>
+              </View>
+
+              <View style={styles.modalTipCard}>
+                <Text style={styles.modalTipTitle}>💧 Watering Best Practices</Text>
+                <Text style={styles.modalTipText}>
+                  • Water early in the morning (6-8 AM){'\n'}
+                  • Avoid watering leaves directly{'\n'}
+                  • Use consistent watering schedule{'\n'}
+                  • Check soil moisture before watering
+                </Text>
+              </View>
+
+              <View style={styles.modalTipCard}>
+                <Text style={styles.modalTipTitle}>🌞 Sunlight Management</Text>
+                <Text style={styles.modalTipText}>
+                  • Provide 6-8 hours of sunlight daily{'\n'}
+                  • Protect from harsh afternoon sun{'\n'}
+                  • Rotate plants for even growth{'\n'}
+                  • Use shade cloth if needed
+                </Text>
+              </View>
+
+              <View style={styles.modalTipCard}>
+                <Text style={styles.modalTipTitle}>🌱 Soil Health</Text>
+                <Text style={styles.modalTipText}>
+                  • Test soil pH regularly{'\n'}
+                  • Add organic compost{'\n'}
+                  • Ensure proper drainage{'\n'}
+                  • Rotate crops seasonally
+                </Text>
+              </View>
+
+              <View style={styles.modalTipCard}>
+                <Text style={styles.modalTipTitle}>🐛 Pest Prevention</Text>
+                <Text style={styles.modalTipText}>
+                  • Inspect plants regularly{'\n'}
+                  • Remove affected leaves promptly{'\n'}
+                  • Use natural pest deterrents{'\n'}
+                  • Maintain clean growing area
+                </Text>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -218,10 +190,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     alignItems: "center",
-    marginTop: 25,
+    marginTop: 35,
   },
   logo: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#111827",
   },
@@ -238,7 +210,7 @@ const styles = StyleSheet.create({
   heroImageLarge: {
     width: 140,
     height: 140,
-    resizeMode: "contain",
+    resizeMode: "cover",
     marginBottom: 12,
     borderRadius: 70,
   },
@@ -275,7 +247,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  // Row buttons
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -297,7 +268,7 @@ const styles = StyleSheet.create({
     color: "#111827",
   },
 
-  // Quick Tips
+  
   quickTipsTitle: {
     fontSize: 16,
     fontWeight: "600",
@@ -322,5 +293,59 @@ const styles = StyleSheet.create({
   tipCardText: {
     fontSize: 13,
     color: "#6b7280",
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    width: "100%",
+    maxHeight: "80%",
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e7eb",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#111827",
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  modalTipCard: {
+    backgroundColor: "#f9fafb",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: "#22c55e",
+  },
+  modalTipTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#111827",
+  },
+  modalTipText: {
+    fontSize: 14,
+    color: "#6b7280",
+    lineHeight: 20,
   },
 });

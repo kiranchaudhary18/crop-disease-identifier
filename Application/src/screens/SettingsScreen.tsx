@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Switch,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { LogOut, Globe, Info, Bell, SunMoon } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
@@ -9,7 +17,7 @@ export default function SettingsScreen({ navigation }: any) {
   const { user } = useAuth();
   const { language, setLanguage, theme, setTheme, colors } = useApp();
 
-  const [notificationsEnabled] = useState(true); // अभी static रहेगा
+  const [notificationsEnabled] = useState(true);
 
   async function handleSignOut() {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -37,15 +45,14 @@ export default function SettingsScreen({ navigation }: any) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.header, { color: colors.text }]}>Settings</Text>
-
-      {/* User Email */}
-      {user?.email && (
-        <Text style={[styles.userEmail, { color: colors.textSecondary }]}>
-          {user.email}
-        </Text>
-      )}
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>Settings</Text>
+        {user?.email && <Text style={styles.userEmail}>{user.email}</Text>}
+      </View>
 
       {/* Language */}
       <TouchableOpacity
@@ -54,7 +61,9 @@ export default function SettingsScreen({ navigation }: any) {
       >
         <View style={styles.menuItemLeft}>
           <Globe size={22} color={colors.primary} />
-          <Text style={[styles.menuItemText, { color: colors.text }]}>Language</Text>
+          <Text style={[styles.menuItemText, { color: colors.text }]}>
+            Language
+          </Text>
         </View>
         <Text style={[styles.menuItemValue, { color: colors.textSecondary }]}>
           {language === "hi" ? "हिंदी" : "English"}
@@ -74,7 +83,9 @@ export default function SettingsScreen({ navigation }: any) {
       <View style={[styles.menuItem, { backgroundColor: colors.surface }]}>
         <View style={styles.menuItemLeft}>
           <Bell size={22} color={colors.primary} />
-          <Text style={[styles.menuItemText, { color: colors.text }]}>Notifications</Text>
+          <Text style={[styles.menuItemText, { color: colors.text }]}>
+            Notifications
+          </Text>
         </View>
         <Text style={[styles.menuItemValue, { color: colors.textSecondary }]}>
           {notificationsEnabled ? "Enabled" : "Disabled"}
@@ -96,32 +107,39 @@ export default function SettingsScreen({ navigation }: any) {
       <TouchableOpacity
         style={[
           styles.logoutButton,
-          { borderColor: colors.error, backgroundColor: colors.surface },
+          { borderColor: "#2E7D32", backgroundColor: colors.surface }, // green border
         ]}
         onPress={handleSignOut}
       >
-        <LogOut size={22} color={colors.error} />
-        <Text style={[styles.logoutText, { color: colors.error }]}>Logout</Text>
+        <LogOut size={22} color="#2E7D32" /> {/* green icon */}
+        <Text style={[styles.logoutText, { color: "#2E7D32" }]}>Logout</Text> {/* green text */}
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    paddingTop: 50, // 👈 content thoda niche se start hoga
+  },
+  headerContainer: {
+    backgroundColor: "#2E7D32", // 🌿 dark green
+    paddingVertical: 35,
+    paddingHorizontal: 16,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    marginBottom: 25,
+    alignItems: "center",
   },
   header: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "700",
-    textAlign: "center",
+    color: "#fff",
+    marginBottom: 12,
   },
   userEmail: {
     fontSize: 14,
-    textAlign: "center",
-    marginBottom: 24,
+    color: "#b0ffb0", // thoda soft green email text
   },
   menuItem: {
     flexDirection: "row",
@@ -151,6 +169,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     marginTop: 32,
+    marginHorizontal: 16,
   },
   logoutText: {
     fontSize: 16,
