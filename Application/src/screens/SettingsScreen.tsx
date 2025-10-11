@@ -16,8 +16,7 @@ import { signOut } from "../services/authService";
 export default function SettingsScreen({ navigation }: any) {
   const { user } = useAuth();
   const { language, setLanguage, theme, setTheme, colors } = useApp();
-
-  const [notificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   async function handleSignOut() {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -60,7 +59,7 @@ export default function SettingsScreen({ navigation }: any) {
         onPress={toggleLanguage}
       >
         <View style={styles.menuItemLeft}>
-          <Globe size={22} color={colors.primary} />
+          <Globe size={22} color={colors.primary} style={styles.icon} />
           <Text style={[styles.menuItemText, { color: colors.text }]}>
             Language
           </Text>
@@ -73,7 +72,7 @@ export default function SettingsScreen({ navigation }: any) {
       {/* Theme */}
       <View style={[styles.menuItem, { backgroundColor: colors.surface }]}>
         <View style={styles.menuItemLeft}>
-          <SunMoon size={22} color={colors.primary} />
+          <SunMoon size={22} color={colors.primary} style={styles.icon} />
           <Text style={[styles.menuItemText, { color: colors.text }]}>Theme</Text>
         </View>
         <Switch value={theme === "dark"} onValueChange={toggleTheme} />
@@ -82,14 +81,15 @@ export default function SettingsScreen({ navigation }: any) {
       {/* Notifications */}
       <View style={[styles.menuItem, { backgroundColor: colors.surface }]}>
         <View style={styles.menuItemLeft}>
-          <Bell size={22} color={colors.primary} />
+          <Bell size={22} color={colors.primary} style={styles.icon} />
           <Text style={[styles.menuItemText, { color: colors.text }]}>
             Notifications
           </Text>
         </View>
-        <Text style={[styles.menuItemValue, { color: colors.textSecondary }]}>
-          {notificationsEnabled ? "Enabled" : "Disabled"}
-        </Text>
+        <Switch
+          value={notificationsEnabled}
+          onValueChange={setNotificationsEnabled}
+        />
       </View>
 
       {/* About */}
@@ -98,7 +98,7 @@ export default function SettingsScreen({ navigation }: any) {
         onPress={openAbout}
       >
         <View style={styles.menuItemLeft}>
-          <Info size={22} color={colors.primary} />
+          <Info size={22} color={colors.primary} style={styles.icon} />
           <Text style={[styles.menuItemText, { color: colors.text }]}>About</Text>
         </View>
       </TouchableOpacity>
@@ -107,12 +107,15 @@ export default function SettingsScreen({ navigation }: any) {
       <TouchableOpacity
         style={[
           styles.logoutButton,
-          { borderColor: "#2E7D32", backgroundColor: colors.surface }, // green border
+          { borderColor: "#2E7D32", backgroundColor: colors.surface },
         ]}
         onPress={handleSignOut}
       >
-        <LogOut size={22} color="#2E7D32" /> {/* green icon */}
-        <Text style={[styles.logoutText, { color: "#2E7D32" }]}>Logout</Text> {/* green text */}
+        {/* wrapped children in a View to avoid accidental text nodes */}
+        <View style={styles.logoutInner}>
+          <LogOut size={22} color="#2E7D32" style={styles.icon} />
+          <Text style={[styles.logoutText, { color: "#2E7D32" }]}>Logout</Text>
+        </View>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    backgroundColor: "#2E7D32", // 🌿 dark green
+    backgroundColor: "#2E7D32",
     paddingVertical: 35,
     paddingHorizontal: 16,
     borderBottomLeftRadius: 0,
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
   },
   userEmail: {
     fontSize: 14,
-    color: "#b0ffb0", // thoda soft green email text
+    color: "#b0ffb0",
   },
   menuItem: {
     flexDirection: "row",
@@ -152,7 +155,9 @@ const styles = StyleSheet.create({
   menuItemLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+  },
+  icon: {
+    marginRight: 12,
   },
   menuItemText: {
     fontSize: 16,
@@ -161,15 +166,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
     padding: 14,
     borderRadius: 12,
     borderWidth: 1,
     marginTop: 32,
     marginHorizontal: 16,
+  },
+  logoutInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logoutText: {
     fontSize: 16,
