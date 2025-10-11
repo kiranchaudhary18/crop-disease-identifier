@@ -29,8 +29,12 @@ yarn-error.*
 *.pem
 
 # local env files
+<<<<<<< HEAD
 .env*.local
 .env
+=======
+.env.local
+>>>>>>> 4158175 (Added Application folder from main branch)
 
 # typescript
 *.tsbuildinfo
