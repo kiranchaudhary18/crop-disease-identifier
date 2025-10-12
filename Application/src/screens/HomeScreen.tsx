@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+
+
+import React , {useState} from "react";
 import {
   View,
   Text,
@@ -45,7 +47,7 @@ export default function HomeScreen({ navigation }: any) {
           {/* Farmer with crops image above text */}
           <Image
             source={{
-              uri: "https://images.unsplash.com/photo-1606607291766-9b74d8b62b43?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+              uri: "https://images.unsplash.com/photo-1542475150-12f5a092822a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NDg1MDd8MHwxfHNlYXJjaHwxNXx8ZmFybWVyJTIwYWdyaWN1bHR1cmV8ZW58MHx8fHwxNzE4NzAyNDAwfDA&ixlib=rb-4.0.3&q=80&w=400",
             }}
             style={styles.heroImageLarge}
           />
