@@ -21,7 +21,7 @@
         "WRITE_EXTERNAL_STORAGE"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/h1.png",
+        "foregroundImage": "./assets/crop-logo.png",
         "backgroundColor": "#1dd15d"
       }
     },
