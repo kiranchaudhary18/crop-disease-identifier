@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Crop Disease Identifier",
+    "name": "CropGuard",
     "slug": "crop-disease-identifier",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/h1.png",
+    "icon": "./assets/crop-logo.png",
     "splash": {
       "image": "./assets/h1.png",
       "resizeMode": "contain",
